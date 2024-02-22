@@ -1,0 +1,17 @@
+# Code
+.idea/
+.vscode/
+
+# Node
+node_modules/
+
+# Compiled static
+wagtail_draftail_hovercard/static/wagtail_draftail_hovercard/*
+
+# Python
+venv/
+__pycache__/
+*.egg-info/
+*.pyc
+.coverage*
+dist/

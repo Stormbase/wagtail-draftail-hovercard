@@ -1,0 +1,88 @@
+name: "Publish to PyPI"
+on:
+  release:
+    types: ["published"]
+  workflow_dispatch:
+
+
+jobs:
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install frontend dependencies
+        run: |
+          npm ci
+      - name: Build frontend artifacts
+        run: |
+          npm run build
+      - name: Upload frontend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: "static"
+          path: "wagtail_draftail_hovercard/static/"
+          retention-days: 1
+  build-python-package:
+    runs-on: ubuntu-latest
+    needs: ['frontend-build']
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download static files
+        uses: actions/download-artifact@v4
+        with:
+          name: "static"
+          path: "wagtail_draftail_hovercard/static/"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install additional software
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libssl-dev libcurl4-openssl-dev gettext
+      - name: Install dependencies
+        env:
+          PYCURL_SSL_LIBRARY: openssl
+        run: |
+          pip install "poetry>=1.7.1,<2.0.0"
+          poetry install
+      - name: Build Python package
+        env:
+          PYCURL_SSL_LIBRARY: openssl
+        run: |
+          source $(poetry env info --path)/bin/activate
+          poetry version $(git describe --tags --abbrev=0)
+          poetry build
+      - name: Upload Python package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./dist
+          name: dist
+
+# https://docs.pypi.org/trusted-publishers/using-a-publisher/
+  pypi-publish:
+    needs: ['build-python-package']
+    environment: 'publish'
+
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    permissions:
+      # Mandatory for trusted publishing
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: "dist"
+          path: "dist/"
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
+          print-hash: true

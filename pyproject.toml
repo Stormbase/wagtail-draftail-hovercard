@@ -1,0 +1,32 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "wagtail-draftail-hovercard"
+version = "v0.2.0"
+description = "Hovercard entity for Wagtail's Draftail rich text editor"
+license = "MIT"
+keywords = ["wagtail", "draftail", "rich text", "editor"]
+classifiers = [
+    "Environment :: Web Environment",
+    "License :: OSI Approved :: MIT License",
+    "Framework :: Wagtail",
+    "Framework :: Wagtail :: 4",
+    "Framework :: Wagtail :: 5",
+]
+authors = ["Storm B. Heg <storm@stormbase.digital>"]
+readme = "README.md"
+include = [
+    # Static files MUST be included in the build sdist/bdist_wheel
+    # Otherwise, collectstatic will not work in production
+    "wagtail_draftail_hovercard/static/**/*"
+]
+
+[tool.poetry.urls]
+repository = "https://github.com/Stormbase/wagtail-draftail-hovercard"
+changelog = "https://github.com/Stormbase/wagtail-draftail-hovercard/blob/main/CHANGELOG.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+wagtail = ">=4.2"

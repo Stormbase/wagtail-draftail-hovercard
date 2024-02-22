@@ -1,0 +1,14 @@
+{
+  "name": "wagtail-richtext-hovercard",
+  "version": "1.0.0",
+  "author": "Storm B. Heg <storm@stormbase.digital>",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "vite": "^5.0.12"
+  },
+  "scripts": {
+    "watch": "vite build --mode development --watch",
+    "build": "vite build"
+  }
+}
